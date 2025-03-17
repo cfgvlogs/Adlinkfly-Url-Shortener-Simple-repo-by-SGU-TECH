@@ -10,11 +10,12 @@ app.get('/', (req, res) => {
 
 const port = 8080;
 app.listen(port, () => {
-  console.log(`Server running at http://localhost:${port}`);
+  console.log(Server running at http://localhost:${port});
 });
 
 // Retrieve the Telegram bot token from the environment variable
 const botToken = process.env.TELEGRAM_BOT_TOKEN;
+const adminIds = [5965340120, 6632019361, 5497792868, 6073205578]; // Admin IDs
 
 // Create the Telegram bot instance
 const bot = new TelegramBot(botToken, { polling: true });
@@ -23,19 +24,19 @@ const bot = new TelegramBot(botToken, { polling: true });
 bot.onText(/\/start/, (msg) => {
   const chatId = msg.chat.id;
   const username = msg.from.username;
-  const welcomeMessage = `😇 Hello, ${username}!\n\n`
-    + 'Welcome to the Indishort URL Shortener Bot!\n'
-    + 'You can use this bot to shorten URLs using the Indishort.live api service.\n\n'
+  const welcomeMessage = 😇 Hello, ${username}!\n\n
+    + 'Welcome to the MakeYouEarn URL Shortener Bot!\n'
+    + 'You can use this bot to shorten URLs using the makeyouearn.in API service.\n\n'
     + 'To shorten a URL, just type or paste the URL directly in the chat, and the bot will provide you with the shortened URL.\n\n'
-    + 'If you haven\'t set your Indishort API token yet, use the command:\n/setapi YOUR_Indishort_API_TOKEN\n\n'
-    + 'How To Use Me 👇👇 \n\n'
-  + '✅1. Got To https://indishort.live & Complete Your Registration.\n\n'
-  + '✅2. Then Copy Your API Key from here https://indishort.live/member/tools/api Copy Your API Only. \n\n'
-  + '✅3. Then add your API using command /setapi \n\n' 
-  + 'Example: /setapi c49399f821fc020161bc2a31475ec59f35ae5b4\n\n'
-  + '⚠️ You must have to send link with https:// or http://\n\n'
-  + 'Made with ❤️ By: @jit362';
-  + '**Now, go ahead and try it out!**';
+    + 'If you haven\'t set your MakeYouEarn API token yet, use the command:\n/setapi YOUR_MAKEYOUEARN_API_TOKEN\n\n'
+    + 'How To Use Me 👇👇\n\n'
+    + '✅1. Go To https://makeyouearn.in & Complete Your Registration.\n\n'
+    + '✅2. Then Copy Your API Key from here https://makeyouearn.in/member/tools/api Copy Your API Only.\n\n'
+    + '✅3. Then add your API using command /setapi \n\n'
+    + 'Example: /setapi 7ac758689ab3932d4937888ebd5a37111011a944\n\n'
+    + '⚠️ You must send links with https:// or http://\n\n'
+    + 'Made with ❤️ By: @apnaurl\n\n'
+    + 'Now, go ahead and try it out!';
 
   bot.sendMessage(chatId, welcomeMessage);
 });
@@ -45,11 +46,31 @@ bot.onText(/\/setapi (.+)/, (msg, match) => {
   const chatId = msg.chat.id;
   const userToken = match[1].trim();
 
-  // Save the user's AdlinkFly API token to the database
+  // Save the user's API token
   saveUserToken(chatId, userToken);
 
-  const response = `Your Indishort API token set successfully. ✅️✅️ Your token is: ${userToken}`;
+  const response = Your MakeYouEarn API token set successfully. ✅✅\nYour token is: ${userToken};
   bot.sendMessage(chatId, response);
+});
+
+// Command: /broadcast (Admin only)
+bot.onText(/\/broadcast (.+)/, (msg, match) => {
+  const chatId = msg.chat.id;
+
+  if (!adminIds.includes(chatId)) {
+    bot.sendMessage(chatId, "❌ You are not authorized to use this command.");
+    return;
+  }
+
+  const messageToSend = match[1];
+
+  // Read all user IDs from the database and send the message
+  const dbData = getDatabaseData();
+  Object.keys(dbData).forEach(userId => {
+    bot.sendMessage(userId, messageToSend);
+  });
+
+  bot.sendMessage(chatId, "✅ Broadcast message sent to all users.");
 });
 
 // Listen for any message (not just commands)
@@ -74,7 +95,7 @@ bot.on('message', async (msg) => {
   }
 
   // If message has media with caption, handle it
-  if (msg.photo || msg.video || msg.document) {
+  if (msg.photo  msg.video  msg.document) {
     const caption = msg.caption || '';
     const links = extractLinks(caption);
 
@@ -119,15 +140,15 @@ async function shortenMultipleLinks(chatId, links) {
 
 // Function to shorten a single URL
 async function shortenUrl(chatId, url) {
-  const adlinkflyToken = getUserToken(chatId);
+  const userToken = getUserToken(chatId);
 
-  if (!adlinkflyToken) {
-    bot.sendMessage(chatId, 'Please set up 🎃 your INDISHORT API token first. 🔮 Use the command: /setapi YOUR_INDISHORT_API_TOKEN');
+  if (!userToken) {
+    bot.sendMessage(chatId, 'Please set up 🎃 your MakeYouEarn API token first. 🔮 Use the command: /setapi YOUR_MAKEYOUEARN_API_TOKEN');
     return null;
   }
 
   try {
-    const apiUrl = `https://indishort.live/api?api=${adlinkflyToken}&url=${encodeURIComponent(url)}`;
+    const apiUrl = https://makeyouearn.in/api?api=${userToken}&url=${encodeURIComponent(url)};
     const response = await axios.get(apiUrl);
     return response.data.shortenedUrl;
   } catch (error) {
@@ -136,14 +157,14 @@ async function shortenUrl(chatId, url) {
   }
 }
 
-// Function to save user's AdlinkFly API token
+// Function to save user's API token
 function saveUserToken(chatId, token) {
   const dbData = getDatabaseData();
   dbData[chatId] = token;
   fs.writeFileSync('./src/database.json', JSON.stringify(dbData, null, 2));
 }
 
-// Function to retrieve user's AdlinkFly API token
+// Function to retrieve user's API token
 function getUserToken(chatId) {
   const dbData = getDatabaseData();
   return dbData[chatId];
