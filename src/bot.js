@@ -24,17 +24,17 @@ bot.onText(/\/start/, (msg) => {
   const chatId = msg.chat.id;
   const username = msg.from.username;
   const welcomeMessage = `😇 Hello, ${username}!\n\n`
-    + 'Welcome to the Indishort URL Shortener Bot!\n'
-    + 'You can use this bot to shorten URLs using the Indishort.live api service.\n\n'
+    + 'Welcome to the Makeyouearn URL Shortener Bot!\n'
+    + 'You can use this bot to shorten URLs using the Makeyouearn.in api service.\n\n'
     + 'To shorten a URL, just type or paste the URL directly in the chat, and the bot will provide you with the shortened URL.\n\n'
     + 'If you haven\'t set your Indishort API token yet, use the command:\n/setapi YOUR_Indishort_API_TOKEN\n\n'
     + 'How To Use Me 👇👇 \n\n'
-  + '✅1. Got To https://indishort.live & Complete Your Registration.\n\n'
-  + '✅2. Then Copy Your API Key from here https://indishort.live/member/tools/api Copy Your API Only. \n\n'
+  + '✅1. Got To https://Makeyouearn.in & Complete Your Registration.\n\n'
+  + '✅2. Then Copy Your API Key from here https://Makeyouearn.in/member/tools/api Copy Your API Only. \n\n'
   + '✅3. Then add your API using command /setapi \n\n' 
-  + 'Example: /setapi c49399f821fc020161bc2a31475ec59f35ae5b4\n\n'
+  + 'Example: /setapi d7c9120bf901ffbfc1d5de306b404f38f56f931a\n\n'
   + '⚠️ You must have to send link with https:// or http://\n\n'
-  + 'Made with ❤️ By: @jit362';
+  + 'Made with ❤️ By: @apnaurl';
   + '**Now, go ahead and try it out!**';
 
   bot.sendMessage(chatId, welcomeMessage);
@@ -48,7 +48,7 @@ bot.onText(/\/setapi (.+)/, (msg, match) => {
   // Save the user's AdlinkFly API token to the database
   saveUserToken(chatId, userToken);
 
-  const response = `Your Indishort API token set successfully. ✅️✅️ Your token is: ${userToken}`;
+  const response = `Your Makeyouearn API token set successfully. ✅️✅️ Your token is: ${userToken}`;
   bot.sendMessage(chatId, response);
 });
 
@@ -122,12 +122,12 @@ async function shortenUrl(chatId, url) {
   const adlinkflyToken = getUserToken(chatId);
 
   if (!adlinkflyToken) {
-    bot.sendMessage(chatId, 'Please set up 🎃 your INDISHORT API token first. 🔮 Use the command: /setapi YOUR_INDISHORT_API_TOKEN');
+    bot.sendMessage(chatId, 'Please set up 🎃 your Makeyouearn API token first. 🔮 Use the command: /setapi YOUR_MAKEYOUEARN_API_TOKEN');
     return null;
   }
 
   try {
-    const apiUrl = `https://indishort.live/api?api=${adlinkflyToken}&url=${encodeURIComponent(url)}`;
+    const apiUrl = `https://Makeyouearn.in/api?api=${adlinkflyToken}&url=${encodeURIComponent(url)}`;
     const response = await axios.get(apiUrl);
     return response.data.shortenedUrl;
   } catch (error) {
